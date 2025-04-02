@@ -1,5 +1,6 @@
 import requests
 import json
+from full_text_speech_module import speak_text, recognize_speech
 
 # Check if Ollama server is running
 def check_server_status():
@@ -17,6 +18,10 @@ def check_server_status():
 
 # Query the model with a test message
 def query_model():
+    
+    content_ = recognize_speech()
+    print(" ")
+    print(content_)
     url = 'http://127.0.0.1:11434/v1/chat/completions'
     headers = {
         'Content-Type': 'application/json',
@@ -25,7 +30,7 @@ def query_model():
     payload = {
         "model": "llama3:latest",  # Specify the model name explicitly
         "messages": [
-            {"role": "user", "content": "Can you get me the tips to make a prsentation."}
+            {"role": "user", "content": content_}
         ]
     }
     
@@ -35,7 +40,9 @@ def query_model():
         if response.status_code == 200:
             data = response.json()
             if 'choices' in data and len(data['choices']) > 0:
-                print("Model response:", data['choices'][0]['message']['content'])
+                quote = data['choices'][0]['message']['content']
+                print("Model response:", quote)
+                speak_text(quote)  
             else:
                 print("No valid response from model.")
         else:
