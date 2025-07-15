@@ -63,7 +63,6 @@ def query_gemini(prompt: str) -> str:
 User Query: {prompt}
 """
     else:
-    # Fallback: Just use raw prompt, no misleading instruction
         full_prompt = prompt
 
     data = {
