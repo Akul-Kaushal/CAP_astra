@@ -41,14 +41,14 @@ PROJECT_ASTRA/
 1. **Clone the Repository**
 
 ```bash
-Copy
+ 
 git clone https://github.com/Akul-Kaushal/CAP_astra.git
 cd CAP_astra
 Create and Activate Virtual Environment
 ```
 
 ```bash
-Copy
+ 
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 ```
@@ -56,7 +56,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 2. **Install Dependencies**
 
 ```bash
-Copy
+ 
 pip install -r requirements.txt
 ```
 
@@ -65,7 +65,7 @@ pip install -r requirements.txt
 Create a .env file:
 
 ```env
-Copy
+ 
 GEMINI_API_KEY=your_api_key_here
 ```
 
@@ -78,7 +78,7 @@ Fork this repository using the GitHub "Fork" button.
 1. **Clone your forked repo locally:**
 
 ```bash
-Copy
+ 
 git clone https://github.com/YOUR_USERNAME/PROJECT_ASTRA.git
 cd PROJECT_ASTRA
 ```
@@ -86,14 +86,14 @@ cd PROJECT_ASTRA
 2. **Create a new branch for your feature or fix:**
 
 ```bash
-Copy
+ 
 git checkout -b your-feature-name
 ```
 
 3. **Make your changes only in your fork.**
 
 ```bash
-Copy
+ 
 git add .
 git commit -m "Add: Description of your change"
 git push origin your-feature-name
