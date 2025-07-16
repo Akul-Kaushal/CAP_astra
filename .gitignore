@@ -5,3 +5,6 @@
 /server/__pycache__
 *.pyc
 *.pyo
+
+/server/test.py
+/server/index_vector.py
