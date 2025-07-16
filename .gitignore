@@ -5,3 +5,7 @@
 /server/__pycache__
 *.pyc
 *.pyo
+
+/server/z_generating_pickle.py
+/server/z_test.py
+/server/logger.py
