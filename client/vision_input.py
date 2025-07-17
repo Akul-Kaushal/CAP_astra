@@ -8,7 +8,7 @@ mp_drawing = mp.solutions.drawing_utils # type: ignore
 def detect_gesture(hand_landmarks) -> str:
     lm = hand_landmarks.landmark
 
-    # Thumb extended: tip is far from wrist (approx)
+
     is_thumb_up = lm[4].y < lm[3].y < lm[2].y
 
     # All other fingers curled

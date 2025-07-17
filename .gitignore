@@ -9,3 +9,7 @@
 /server/z_generating_pickle.py
 /server/z_test.py
 /server/logger.py
+
+
+/client/gesture_camera.py
+/client/gesture_control.py
