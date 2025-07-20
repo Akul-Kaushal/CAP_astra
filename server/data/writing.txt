@@ -1,0 +1,3 @@
+Turn off the main power switch before handling wires.
+Use a voltage tester to ensure wires are not live.
+Connect wires using proper color codes and secure them with a cap.

@@ -4,6 +4,8 @@ from parser import parse_command
 import requests
 import os
 import shutil
+from routes.upload_route import upload_file_to_server as upload_file
+from routes.ask_route import ask_question_to_server as ask_gemini
 
 def wait_for_wake_word(recognizer, mic, wake_word="astra", timeout=5):
     print(f"Say '{wake_word}' to activate...")
@@ -77,34 +79,13 @@ if __name__ == "__main__":
     print("Parsed:", parsed)
 
     if "upload" in parsed["intents"]:
-        # Updated path to point to actual location
-        upload_dir = os.path.join("client", "uploads")
         filename = parsed["upload_file"]
-        filepath = os.path.join(upload_dir, filename)
-
-        if not os.path.exists(filepath):
-            print(f"File not found at {filepath}")
-        else:
-            with open(filepath, "rb") as f:
-                files = {"file": (filename, f, "text/plain")}
-                try:
-                    response = requests.post("http://localhost:8000/upload", files=files)
-                    print("Upload Response:", response.json())
-
-                    # Optional: copy file to /data for use in RAG
-                    data_path = os.path.join("data", filename)
-                    shutil.copy(filepath, data_path)
-                    print(f"Copied uploaded file to: {data_path}")
-
-                except Exception as e:
-                    print("Upload failed:", e)
+        upload_response = upload_file(filename)
+        print("Upload Response:", upload_response)
 
     if "ask" in parsed["intents"]:
-        try:
-            response = requests.post("http://localhost:8000/ask", json={"prompt": parsed["ask_topic"]})
-            print("Gemini Response:", response.json())
-        except Exception as e:
-            print("Ask failed:", e)
+        ask_response = ask_gemini(parsed["ask_topic"])
+        print("Gemini Response:", ask_response)
 
     if not parsed["intents"]:
         print("Command not recognized.")

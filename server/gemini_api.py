@@ -21,31 +21,27 @@ def query_gemini(prompt: str) -> str:
     headers = {"Content-Type": "application/json"}
     params = {"key": API_KEY}
 
-    results = find_similar_documents(prompt, top_k=2, min_score=0.6)
+    results = find_similar_documents(prompt, top_k=3, min_score=0.5)  # loosen threshold
+
+    context = ""
+    matched_files = []
 
     if results:
-        context = ""
-        matched_files = []
         for score, doc in results:
-            context += f"### {doc['filename']} ###\n{doc['text']}\n\n"
+            context += f"### Source: {doc['filename']} ###\n{doc['text']}\n\n"
             matched_files.append(doc['filename'])
 
-        full_prompt = f"""You are an assistant using task manuals to answer user queries.
+    full_prompt = f"""
+You are a helpful assistant trained on task-specific manuals. If any of the following documents are relevant, use them to answer the user's question. If they are not relevant, answer using general knowledge — but still keep it brief and focused.
 
-Task Manuals:
-{context}
+Documents:
+{context if context.strip() else '[No documents matched]'}
 
-User Query: {prompt}
-"""
-    else:
-        context = ""
-        matched_files = []
-        full_prompt = f"""You are a smart assistant.
+Question:
+{prompt}
 
-Answer the following question using your own general knowledge:
-
-User Query: {prompt}
-"""
+Provide the most appropriate answer in **one paragraph or less**.
+""".strip()
 
     data = {
         "contents": [
@@ -61,7 +57,7 @@ User Query: {prompt}
         if response.status_code == 200:
             output = response.json()['candidates'][0]['content']['parts'][0]['text']
             log_interaction(prompt, context, output, matched_files)
-            return output
+            return output.strip()
         elif response.status_code == 503:
             print(f"[Retry {attempt}] Gemini is overloaded. Retrying...")
             time.sleep(2 + attempt)
