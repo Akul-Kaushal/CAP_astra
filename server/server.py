@@ -7,6 +7,8 @@ from .logger import log_interaction
 from .gemini_embedding import get_gemini_embedding
 import pickle
 
+from pydantic import BaseModel
+
 
 app = FastAPI()
 
@@ -19,18 +21,32 @@ async def ask(request: PromptRequest):
     return {"response": response}
 
 
+
+"""
+
+"""
+class UploadRequest(BaseModel):
+    filename: str
+
+from pydantic import BaseModel
+
+class SpeechUploadRequest(BaseModel):
+    filename: str
+
 @app.post("/upload")
-async def upload_manual(file: UploadFile = File(...)):
-    if not file or not file.filename or not file.filename.endswith(".txt"):
-        return {"error": "Only .txt files are allowed and a file must be provided."}
+def upload_from_filename(data: SpeechUploadRequest):
+    filename = data.filename.strip()
+
+    if not filename.endswith(".txt"):
+        filename += ".txt"
 
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
-    dest_path = os.path.join(data_dir, file.filename)
+    filepath = os.path.join(data_dir, filename)
 
-    with open(dest_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    if not os.path.exists(filepath):
+        return {"error": f"File '{filename}' not found in /data"}
 
-    with open(dest_path, "r", encoding="utf-8") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         text = f.read()
         embedding = get_gemini_embedding(text)
 
@@ -42,7 +58,7 @@ async def upload_manual(file: UploadFile = File(...)):
         index = []
 
     index.append({
-        "filename": file.filename,
+        "filename": filename,
         "text": text,
         "embedding": embedding
     })
@@ -50,5 +66,6 @@ async def upload_manual(file: UploadFile = File(...)):
     with open(pkl_path, "wb") as f:
         pickle.dump(index, f)
 
-    return {"message": f"{file.filename} uploaded and embedded successfully."}
+    return {"message": f"{filename} uploaded and embedded successfully via speech."}
+
 

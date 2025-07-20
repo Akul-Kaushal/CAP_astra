@@ -3,6 +3,7 @@
 /logs
 /data
 /server/__pycache__
+/client/__pycache__
 *.pyc
 *.pyo
 
@@ -13,3 +14,4 @@
 
 /client/gesture_camera.py
 /client/gesture_control.py
+/client/uploads
