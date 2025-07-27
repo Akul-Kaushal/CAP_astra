@@ -2,9 +2,11 @@ import os
 import requests
 
 def upload_file_to_server(file_path: str, server_url="http://localhost:8000/upload"):
+
     if not os.path.exists(file_path):
-        print(f"[ERROR] File not found: {file_path}")
+        print(f"[ERROR _upload] File not found: {file_path}")
         return None
+
 
     if not file_path.endswith(".txt"):
         print("[ERROR] Only .txt files are supported.")

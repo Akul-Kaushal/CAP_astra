@@ -30,14 +30,57 @@ def clean_filename(raw: str) -> str:
 
 def find_best_matching_file(filename: str, directory: str = "uploads") -> str | None:
     """
-    Finds the most similar filename in the uploads directory.
+    Finds the most similar .txt filename in the uploads directory.
+    Handles common voice recognition mistakes and plural/singular mismatches.
     """
     try:
         files = os.listdir(directory)
-        matches = difflib.get_close_matches(filename, files, n=1, cutoff=0.5)
-        return matches[0] if matches else None
+        txt_files = [f for f in files if f.endswith(".txt")]
+
+        def try_match(name: str, candidates: list[str]) -> str | None:
+            matches = difflib.get_close_matches(name, candidates, n=1, cutoff=0.4)
+            return matches[0] if matches else None
+
+        # 1. Try exact match
+        match = try_match(filename, txt_files)
+        if match:
+            return match
+
+        # 2. Try appending .txt
+        if not filename.endswith(".txt"):
+            match = try_match(filename + ".txt", txt_files)
+            if match:
+                return match
+
+        # 3. Try removing .txt
+        if filename.endswith(".txt"):
+            base = filename.removesuffix(".txt")
+            stripped_files = [f.removesuffix(".txt") for f in txt_files]
+            match = try_match(base, stripped_files)
+            if match:
+                return match + ".txt"
+
+        # 4. Try plural/singular conversions
+        if filename.endswith("s.txt"):
+            singular = filename.replace("s.txt", ".txt")
+            if singular in txt_files:
+                return singular
+            match = try_match(singular, txt_files)
+            if match:
+                return match
+        elif filename.endswith(".txt"):
+            plural = filename.replace(".txt", "s.txt")
+            if plural in txt_files:
+                return plural
+            match = try_match(plural, txt_files)
+            if match:
+                return match
+
+        return None
+
     except FileNotFoundError:
         return None
+
 
 def parse_command(transcription: str, uploads_dir: str = "uploads") -> dict:
     """
@@ -58,24 +101,29 @@ def parse_command(transcription: str, uploads_dir: str = "uploads") -> dict:
         return result
 
     words = transcription.split()
-
-    # Upload intent
     if "upload" in words:
         result["intents"].append("upload")
         try:
             idx = words.index("upload")
-            file_raw = " ".join(words[idx + 1:])
+            file_raw = " ".join(words[idx + 1:])  
             cleaned = clean_filename(file_raw)
+
+
             result["upload_file"] = cleaned
 
-            # Suggest close file if exact not found
-            full_path = os.path.join(uploads_dir, cleaned)
+            upload_dir_path = os.path.abspath(uploads_dir)
+            full_path = os.path.join(upload_dir_path, cleaned)
+            print(f"Full path to file: {full_path}")
+
+
             if not os.path.exists(full_path):
-                suggestion = find_best_matching_file(cleaned, uploads_dir)
+                suggestion = find_best_matching_file(file_raw, upload_dir_path)
                 if suggestion:
+                    print(f"[INFO] Suggested file based on fuzzy match: {suggestion}")
                     result["suggested_file"] = suggestion
         except IndexError:
             result["upload_file"] = "unknown_file.txt"
+
 
     # Ask intent
     if any(q in transcription for q in ["how", "what", "why", "when", "where", "who", "can you", "tell me"]):
@@ -87,27 +135,3 @@ def parse_command(transcription: str, uploads_dir: str = "uploads") -> dict:
 
     return result
 
-def handle_voice_command(transcription: str):
-    parsed = parse_command(transcription)
-    print(f"\nFinal Transcription: {parsed['raw']}")
-    print(f"Parsed: {parsed}")
-
-    if "upload" in parsed["intents"]:
-        filename = parsed["upload_file"]
-        filepath = os.path.join("uploads", filename)
-
-        if os.path.exists(filepath):
-            print(f"Uploading file: {filename}")
-        elif parsed["suggested_file"]:
-            print(f"File '{filename}' not found.")
-            print(f"Did you mean '{parsed['suggested_file']}'?")
-            confirm = input("Upload suggested file? (y/n): ").strip().lower()
-            if confirm == 'y':
-                print(f"Uploading file: {parsed['suggested_file']}")
-            else:
-                print("Upload cancelled.")
-        else:
-            print(f"No matching file found for '{filename}'. Upload aborted.")
-
-    if "ask" in parsed["intents"]:
-        print(f"Asking question: {parsed['ask_topic']}")

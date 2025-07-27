@@ -28,8 +28,10 @@ def query_gemini(prompt: str) -> str:
 
     if results:
         for score, doc in results:
-            context += f"### Source: {doc['filename']} ###\n{doc['text']}\n\n"
-            matched_files.append(doc['filename'])
+            filename = doc.get('filename', 'unknown')
+            context += f"### Source: {filename} ###\n{doc['text']}\n\n"
+            matched_files.append(filename)
+
 
     full_prompt = f"""
 You are a helpful assistant trained on task-specific manuals. If any of the following documents are relevant, use them to answer the user's question. If they are not relevant, answer using general knowledge — but still keep it brief and focused.
@@ -40,7 +42,7 @@ Documents:
 Question:
 {prompt}
 
-Provide the most appropriate answer in **one paragraph or less**.
+Provide the most appropriate answer in **Detail A tabular form wolud be much better**.
 """.strip()
 
     data = {
@@ -54,16 +56,25 @@ Provide the most appropriate answer in **one paragraph or less**.
     attempt = 1
     while True:
         response = requests.post(GEMINI_URL, headers=headers, params=params, json=data)
+        try:
+            response_json = response.json()
+        except ValueError:
+            return f"Invalid JSON response: {response.text}"
+
         if response.status_code == 200:
-            output = response.json()['candidates'][0]['content']['parts'][0]['text']
-            log_interaction(prompt, context, output, matched_files)
-            return output.strip()
+                try:
+                    output = response_json['candidates'][0]['content']['parts'][0]['text']
+                    log_interaction(prompt, context, output, matched_files)
+                    return output.strip()
+                except (KeyError, IndexError) as e:
+                    return f"Malformed success response: {response_json}"
         elif response.status_code == 503:
-            print(f"[Retry {attempt}] Gemini is overloaded. Retrying...")
-            time.sleep(2 + attempt)
-            attempt += 1
+                print(f"[Retry {attempt}] Gemini is overloaded. Retrying...")
+                time.sleep(2 + attempt)
+                attempt += 1
         else:
-            return f"Error {response.status_code}: {response.text}"
+                return f"Error {response.status_code}: {response.text}"
+
     
 
 

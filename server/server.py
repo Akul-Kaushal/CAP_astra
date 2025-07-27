@@ -1,5 +1,3 @@
-# server/server.py
-
 from fastapi import FastAPI
 from .routes.ask import router as ask_router
 from .routes.upload import router as upload_router

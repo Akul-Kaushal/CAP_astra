@@ -4,8 +4,24 @@ from parser import parse_command
 import requests
 import os
 import shutil
+import pyttsx3  
 from routes.upload_route import upload_file_to_server as upload_file
 from routes.ask_route import ask_question_to_server as ask_gemini
+
+engine = pyttsx3.init()
+current_text = ""  
+
+def speak(text):
+    global current_text
+    if not text or not isinstance(text, str):
+        print("[ERROR] Invalid text for TTS:", text)
+        return
+    try:
+        current_text = text
+        engine.say(text)
+        engine.runAndWait()
+    except Exception as e:
+        print("[TTS ERROR]", e)
 
 def wait_for_wake_word(recognizer, mic, wake_word="astra", timeout=5):
     print(f"Say '{wake_word}' to activate...")
@@ -26,7 +42,7 @@ def wait_for_wake_word(recognizer, mic, wake_word="astra", timeout=5):
                 print(f"Error while listening: {e}")
                 continue
 
-def listen_and_transcribe(language="en-IN", silence_threshold=4.0, timeout_duration=10, phrase_limit=15, max_phrases=5):
+def listen_and_transcribe(language="en-IN", silence_threshold=4.0, timeout_duration=10, phrase_limit=15, max_phrases=10):
     recognizer = sr.Recognizer()
     mic = sr.Microphone()
 
@@ -45,7 +61,7 @@ def listen_and_transcribe(language="en-IN", silence_threshold=4.0, timeout_durat
         while phrase_count < max_phrases:
             try:
                 audio = recognizer.listen(source, timeout=timeout_duration, phrase_time_limit=phrase_limit)
-                text = recognizer.recognize_google(audio, language=language).lower()  # type: ignore
+                text = recognizer.recognize_google(audio, language=language).lower() #type: ignore
                 print("Heard:", text)
 
                 if any(phrase in text for phrase in ["stop listen", "that's all", "done", "end input", "stop now"]):
@@ -80,12 +96,48 @@ if __name__ == "__main__":
 
     if "upload" in parsed["intents"]:
         filename = parsed["upload_file"]
-        upload_response = upload_file(filename)
-        print("Upload Response:", upload_response)
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.join(base_dir, "uploads", filename)
+        print(f"{parsed['suggested_file']}")
+        print(f"Full path to file: {filepath}")
+        
+        if os.path.exists(filepath):
+            upload_response = upload_file(filepath)
+            print("Upload Response:", upload_response)
+            if upload_response:
+                speak(f"{filename} uploaded successfully. Would you like to ask a question from this file?")
+                followup = listen_and_transcribe()
+                print("Follow-up:", followup)
+                
+                followup_parsed = parse_command(followup)
+                if "ask" in followup_parsed["intents"]:
+                    ask_response = ask_gemini(followup_parsed["ask_topic"])
+                    print("Gemini Response:", ask_response)
+                elif followup.strip():
+                    ask_response = ask_gemini(followup)
+                    print("Gemini Response:", ask_response)
+                else:
+                    print("No question asked.")
+
+
+        elif parsed["suggested_file"]:
+            print(f"[ERROR] File '{filename}' not found.")
+            print(f"Did you mean '{parsed['suggested_file']}'?")
+            confirm = input("Upload suggested file? (y/n): ").strip().lower()
+            if confirm == 'y':
+                filepath = os.path.join(base_dir, "uploads", parsed["suggested_file"])
+                upload_response = upload_file(filepath)
+                print("Upload Response:", upload_response)
+            else:
+                print("Upload cancelled.")
+        else:
+            print(f"[ERROR] File not found: {filename}")
 
     if "ask" in parsed["intents"]:
         ask_response = ask_gemini(parsed["ask_topic"])
         print("Gemini Response:", ask_response)
+        speak(ask_response)
 
     if not parsed["intents"]:
         print("Command not recognized.")
