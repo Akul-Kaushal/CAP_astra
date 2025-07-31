@@ -42,7 +42,7 @@ Documents:
 Question:
 {prompt}
 
-Provide the most appropriate answer in **Most Precise Way eiter use table bullet point or what ever you fell is right**.
+Provide the most appropriate answer in **Most Precise Way eiter use table bullet point or what ever you fell is right if anything is not present in docs answer on your own**.
 """.strip()
 
     data = {
