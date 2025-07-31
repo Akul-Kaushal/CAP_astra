@@ -12,6 +12,8 @@
 /server/logger.py
 
 
+
 /client/gesture_camera.py
 /client/gesture_control.py
 /client/uploads
+

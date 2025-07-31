@@ -21,7 +21,7 @@ def query_gemini(prompt: str) -> str:
     headers = {"Content-Type": "application/json"}
     params = {"key": API_KEY}
 
-    results = find_similar_documents(prompt, top_k=3, min_score=0.5)  # loosen threshold
+    results = find_similar_documents(prompt, top_k=3, min_score=0.5)  
 
     context = ""
     matched_files = []
@@ -42,7 +42,7 @@ Documents:
 Question:
 {prompt}
 
-Provide the most appropriate answer in **Detail A tabular form wolud be much better**.
+Provide the most appropriate answer in **Most Precise Way eiter use table bullet point or what ever you fell is right**.
 """.strip()
 
     data = {

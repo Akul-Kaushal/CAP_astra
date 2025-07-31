@@ -18,7 +18,7 @@ def get_gemini_embedding(text: str) -> list[float]:
     payload = {
         "content": {
             "parts": [
-                {"text": text[:3500]}  # Safe length for context
+                {"text": text[:3500]}  
             ]
         }
     }
