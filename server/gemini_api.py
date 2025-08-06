@@ -34,7 +34,7 @@ def query_gemini(prompt: str) -> str:
 
 
     full_prompt = f"""
-You are a helpful assistant trained on task-specific manuals. If any of the following documents are relevant, use them to answer the user's question. If they are not relevant, answer using general knowledge — but still keep it brief and focused.
+You are a helpful assistant . If any of the following documents are relevant, use them to answer the user's question. If they are not relevant, answer using general knowledge — but still keep it brief and focused.
 
 Documents:
 {context if context.strip() else '[No documents matched]'}
