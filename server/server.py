@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from .routes.ask import router as ask_router
 from .routes.upload import router as upload_router
 from .routes.notion_route import router as notion_router
+from .routes.ask_image import router as ask_image_router
 
 
 
@@ -21,7 +22,7 @@ app = FastAPI()
 app.include_router(ask_router)
 app.include_router(upload_router)
 app.include_router(notion_router)
-
+app.include_router(ask_image_router)
 
 
 # @app.get("/")
