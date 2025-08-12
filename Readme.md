@@ -17,21 +17,43 @@ Project ASTRA is an AI-powered Smart Home Assistant designed to **recognize user
 
 ```plaintext
 PROJECT_ASTRA/
-├── client/
-│   └── client.py               # CLI/local interface for user queries
-├── data/
-│   └── *.txt                   # Task instruction manuals (e.g., cooking.txt)
-├── logs/
-│   └── query_log.jsonl         # Stored prompt-response logs
-├── server/
-│   ├── server.py               # FastAPI backend
-│   ├── gemini_api.py           # Gemini API wrapper
-│   ├── semantic_search.py      # Semantic search logic
-│   └── gemini_embedding.py     # Embedding generation logic
-├── shared/                     # Shared utilities/configs (for future use)
-├── .env                        # API key and environment variables
-├── requirements.txt            # Python dependencies
-└── README.md                   # Project overview and guide
+├── client/                     # Client-side logic for input & interaction
+│   ├── routes/                  # Client-side route handlers
+│   ├── uploads/                 # Client-side uploaded data
+│   ├── client_readme.md         # Documentation for client module
+│   ├── gesture_camera.py        # Handles camera input for gesture control
+│   ├── gesture_control.py       # Gesture recognition & mapping logic
+│   ├── parser.py                # Data parsing and processing logic
+│   ├── speech.py                # Speech recognition and handling
+│   └── vision_input.py          # Vision-based input processing
+│
+├── server/                     # Backend logic and routes
+│   ├── data/                   # Server-side stored data
+│   ├── image/                  # Temporary uploaded image storage
+│   ├── routes/                 # API route definitions
+│   │   ├── ask_image.py         # Endpoint for image-based Gemini queries
+│   │   ├── ask.py               # Endpoint for text-based queries
+│   │   ├── notion_route.py      # Endpoint for Notion integration
+│   │   └── upload.py            # Endpoint for file uploads
+│   ├── embedding_index.pkl      # Precomputed embedding index (pickle)
+│   ├── gemini_api.py            # Wrapper for Gemini API calls
+│   ├── gemini_embedding.py      # Embedding generation logic
+│   ├── image.py                 # Image processing utilities
+│   ├── logger.py                # Logging utilities
+│   ├── notion.py                # Notion API integration logic
+│   ├── pdf_reader.py            # PDF parsing and reading utilities
+│   ├── semantic_search.py       # Semantic search functionality
+│   ├── server_readme.md         # Server-side README / documentation
+│   ├── server.py                # FastAPI backend entry point
+│   ├── z_generating_pickle.py   # Script to generate embeddings pickle
+│   └── z_test.py                # Test scripts and experiments
+│
+├── shared/                      # Shared configs/utilities
+├── venv/                        # Python virtual environment
+├── .env                         # Environment variables (API keys, etc.)
+├── .gitignore                   # Git ignore rules
+├── Readme.md                    # Project overview & guide
+└── requirements.txt             # Python dependencies
 ```
 
 
