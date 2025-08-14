@@ -36,17 +36,32 @@ def query_gemini(prompt: str) -> str:
             matched_files.append(filename)
 
 
-    full_prompt = f"""
-You are a helpful assistant . If any of the following documents are relevant, use them to answer the user's question. If they are not relevant, answer using general knowledge — but still keep it brief and focused.
+    full_prompt = full_prompt = f"""
+        You are an expert AI assistant that helps interpret and extract insights from documents of various domains — such as insurance policies, legal agreements, HR manuals, technical specs, compliance docs, etc.
 
-Documents:
-{context if context.strip() else '[No documents matched]'}
+        ------------------ DOCUMENT EXCERPTS ------------------
+        {context if context.strip() else '[No documents matched]'}
+        -------------------------------------------------------
 
-Question:
-{prompt}
+        User Question:
+        "{prompt}"
 
-Provide the most appropriate answer in **Most Precise Way eiter use table bullet point or what ever you fell is right if anything is not present in docs answer on your own**.
-""".strip()
+        Your task is to:
+        - First, analyze whether any of the above excerpts are relevant to the question.
+        - If excerpts are relevant: rely ONLY on them to form your answer.
+        - If no excerpts are relevant: answer concisely using your own general knowledge.
+
+        You must return your response in this exact structured JSON format:
+
+        {{
+        "decision": "One of: Approved, Rejected, Yes, No, Found, Not Found, Answered",
+        "amount_or_value": "<If applicable, else 'None'>",
+        "justification": "<Short explanation. If based on docs, cite exact phrases/clauses. If no docs, state 'Answered from general knowledge'>"
+        "summary": "<Concise summary of the answer as if were to explain to a 5-year-old>",
+        }}
+
+        **Output ONLY the JSON. Do NOT include any additional explanation or text.**
+        """.strip()
 
     data = {
         "contents": [
@@ -91,6 +106,32 @@ def ask_gemini_about_image(image_path: str, prompt: str) -> str:
     with open(image_path, "rb") as img_file:
         image_bytes = img_file.read()
         encoded_image = base64.b64encode(image_bytes).decode("utf-8")
+
+
+        prompt = prompt = f"""
+        You are an AI assistant specialized in visual understanding and task guidance.
+
+        Analyze the uploaded image and do the following:
+
+        1. **Object Detection**: Identify all visible objects in the image.
+        2. **Task Recommendation**: Suggest possible tasks or activities that can be done using these objects together.
+        - Example: If vegetables and a knife are detected → recommend cooking or preparing a salad.
+        - If electronic tools are detected → recommend assembly, repair, or safe usage steps.
+        3. **Safety Specifications**: Highlight any safety concerns when using the objects together.
+        - Example: "Knife detected — handle carefully and keep away from children."
+        - "Electrical tool detected — ensure proper insulation before use."
+        4. **Alert Tag**: If there is a potential hazard, explicitly add `"alert": "true"` with a clear warning message.
+
+        You must return the response in this exact JSON format:
+
+        {{
+        "objects_detected": ["list", "of", "objects"],
+        "task_recommendation": "Short description of what task can be done",
+        "safety_specifications": "Clear and concise safety instructions",
+        "alert": "true/false",
+        "alert_message": "<If true, provide a short warning. If false, use 'None'>"
+        }}
+        """.strip()
 
     data = {
         "contents": [
