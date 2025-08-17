@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 import os
 import uuid
 import imghdr
+import json
 
 from ..gemini_api import ask_gemini_about_image
 
@@ -27,16 +28,26 @@ async def ask_image(uid: str = Form(...),prompt: str = Form(...), file: UploadFi
         content = await file.read()
         f.write(content)
 
-
     detected_type = imghdr.what(image_path)
     if detected_type not in ALLOWED_EXTENSIONS:
         os.remove(image_path)  
         raise HTTPException(status_code=400, detail="Uploaded file is not a valid image")
 
-    answer = ask_gemini_about_image(image_path, prompt)
+    response = ask_gemini_about_image(image_path, prompt)
+
+    # Cleanup
     try:
         os.remove(image_path)
     except Exception as e:
         print(f"Warning: Could not delete image: {e}")
 
-    return {"answer": answer}
+    # ✅ Parse response into JSON
+    try:
+        cleaned = response.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+
+        parsed = json.loads(cleaned)
+        return parsed
+    except Exception as e:
+        return {"raw_response": response, "error": str(e)}

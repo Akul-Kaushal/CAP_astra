@@ -124,8 +124,17 @@ def ask_gemini_about_image(image_path: str, prompt: str) -> str:
     You must return the response in this exact JSON format:
 
     {{
-    "objects_detected": ["list", "of", "objects"],
+   "objects_detected": ["list", "of", "objects"],
     "task_recommendation": "Short description of what task can be done",
+    "task_details": 
+        "confirmation": "Yes, this task is recommended.",
+        "possible_actions": ["Action 1", "Action 2", "Action 3"],
+        "steps_to_perform": [
+            "Step 1: Do this",
+            "Step 2: Then do that",
+            "Step 3: Finalize here"
+        ]
+    ,
     "safety_specifications": "Clear and concise safety instructions",
     "alert": "true/false",
     "alert_message": "<If true, provide a short warning. If false, use 'None'>"

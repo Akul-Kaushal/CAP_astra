@@ -1,10 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from ..gemini_api import query_gemini
-
+import json
 
 router = APIRouter()
-
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -12,4 +11,14 @@ class PromptRequest(BaseModel):
 @router.post("/ask/{uid}")
 async def ask(request: PromptRequest):
     response = query_gemini(request.prompt)
-    return {"response": response}
+
+    try:
+        # clean markdown fences if present
+        cleaned = response.strip()
+        if cleaned.startswith("```json"):
+            cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+
+        parsed = json.loads(cleaned)   # ✅ Convert string into real JSON
+        return parsed                  # return directly
+    except Exception as e:
+        return {"raw_response": response, "error": str(e)}
