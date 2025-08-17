@@ -35,13 +35,13 @@ async def ask_image(uid: str = Form(...),prompt: str = Form(...), file: UploadFi
 
     response = ask_gemini_about_image(image_path, prompt)
 
-    # Cleanup
+ 
     try:
         os.remove(image_path)
     except Exception as e:
         print(f"Warning: Could not delete image: {e}")
 
-    # ✅ Parse response into JSON
+   
     try:
         cleaned = response.strip()
         if cleaned.startswith("```json"):

@@ -18,7 +18,7 @@ async def ask(request: PromptRequest):
         if cleaned.startswith("```json"):
             cleaned = cleaned.replace("```json", "").replace("```", "").strip()
 
-        parsed = json.loads(cleaned)   # ✅ Convert string into real JSON
-        return parsed                  # return directly
+        parsed = json.loads(cleaned)   
+        return parsed                  
     except Exception as e:
         return {"raw_response": response, "error": str(e)}
