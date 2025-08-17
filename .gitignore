@@ -17,4 +17,5 @@
 /client/gesture_control.py
 /client/uploads
 
-/frontend
+/frontend/node_modules
+/frontend/dist

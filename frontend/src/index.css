@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AI Assistant Design System - Warm, modern, friendly */
+
+@layer base {
+  :root {
+    /* Background gradients */
+    --background: 225 16% 86%; /* #D8DBE2 */
+    --foreground: 225 25% 22%; /* #373F51 */
+    --gradient-primary: linear-gradient(135deg, hsl(193 38% 52%) 0%, hsl(225 16% 86%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(225 16% 86%) 0%, hsl(216 23% 73%) 100%);
+    
+    /* Chat interface colors */
+    --chat-background: 225 16% 86%; /* #D8DBE2 */
+    --user-message: 193 38% 52%; /* #58A4B0 */
+    --user-message-foreground: 225 16% 86%;
+    --ai-message: 216 23% 73%; /* #A9BCD0 */
+    --ai-message-foreground: 225 25% 22%; /* #373F51 */
+    
+    /* Card and surfaces */
+    --card: 225 16% 86%;
+    --card-foreground: 225 25% 22%;
+    --card-elevated: 216 23% 73%;
+    
+    /* Interactive elements */
+    --primary: 193 38% 52%; /* #58A4B0 */
+    --primary-hover: 193 45% 48%;
+    --primary-foreground: 225 16% 86%;
+    
+    --secondary: 216 23% 73%; /* #A9BCD0 */
+    --secondary-hover: 216 28% 68%;
+    --secondary-foreground: 225 25% 22%;
+    
+    /* Accent colors */
+    --accent: 225 25% 22%; /* #373F51 */
+    --accent-foreground: 225 16% 86%;
+    --accent-muted: 216 23% 73%;
+    
+    /* Borders and inputs */
+    --border: 216 23% 73%;
+    --border-subtle: 225 16% 86%;
+    --input: 225 16% 86%;
+    --input-border: 216 23% 73%;
+    --ring: 193 38% 52%;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(240 15% 15% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(240 15% 15% / 0.1), 0 2px 4px -1px hsl(240 15% 15% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(240 15% 15% / 0.1), 0 4px 6px -2px hsl(240 15% 15% / 0.05);
+    --shadow-message: 0 2px 8px hsl(240 15% 15% / 0.08);
+    
+    /* Spacing and layout */
+    --radius: 1rem;
+    --radius-lg: 1.5rem;
+    --radius-sm: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 225 14% 11%; /* #1B1B1E */
+    --foreground: 225 16% 86%; /* #D8DBE2 */
+
+    --card: 225 25% 22%; /* #373F51 */
+    --card-foreground: 225 16% 86%;
+
+    --popover: 225 25% 22%;
+    --popover-foreground: 225 16% 86%;
+
+    --primary: 193 38% 52%; /* #58A4B0 */
+    --primary-foreground: 225 16% 86%;
+
+    --secondary: 225 25% 22%; /* #373F51 */
+    --secondary-foreground: 225 16% 86%;
+
+    --muted: 225 25% 22%;
+    --muted-foreground: 216 23% 73%;
+
+    --accent: 216 23% 73%; /* #A9BCD0 */
+    --accent-foreground: 225 25% 22%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 225 16% 86%;
+
+    --border: 225 25% 22%;
+    --input: 225 25% 22%;
+    --ring: 193 38% 52%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background: var(--gradient-subtle);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+@layer components {
+  /* Message animations */
+  .message-enter {
+    @apply animate-in slide-in-from-bottom-4 fade-in-0 duration-300;
+  }
+  
+  .message-bubble {
+    @apply rounded-xl px-4 py-3 max-w-[85%] shadow-[var(--shadow-message)] transition-all duration-200;
+  }
+  
+  .user-message {
+    @apply bg-[hsl(var(--user-message))] text-[hsl(var(--user-message-foreground))] ml-auto;
+  }
+  
+  .ai-message {
+    @apply bg-[hsl(var(--ai-message))] text-[hsl(var(--ai-message-foreground))] mr-auto;
+  }
+  
+  /* Input area styling */
+  .chat-input {
+    @apply bg-[hsl(var(--input))] border-[hsl(var(--input-border))] rounded-full px-6 py-4 text-base;
+    @apply focus:ring-2 focus:ring-[hsl(var(--ring))] focus:border-transparent transition-all duration-200;
+  }
+  
+  .send-button {
+    @apply bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary-hover))] text-[hsl(var(--primary-foreground))];
+    @apply rounded-full p-3 shadow-lg transition-all duration-200 transform hover:scale-105;
+  }
+  
+  .upload-button {
+    @apply bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--secondary-hover))] text-[hsl(var(--secondary-foreground))];
+    @apply rounded-full p-3 transition-all duration-200 transform hover:scale-105;
+  }
+  
+  /* Header styling */
+  .header-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+}

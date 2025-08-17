@@ -60,7 +60,7 @@ def query_gemini(prompt: str) -> str:
         "amount_or_value": "<If applicable, else 'None'>",
         "justification": "<Short explanation. If based on docs, cite exact phrases/clauses. If no docs, state 'Answered from general knowledge'>"
         "summary": "<Concise summary of the answer as if were to explain to a 5-year-old>",
-        }}
+        }}`
 
         **Output ONLY the JSON. Do NOT include any additional explanation or text.**
         """.strip()

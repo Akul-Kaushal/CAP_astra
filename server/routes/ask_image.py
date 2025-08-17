@@ -11,7 +11,7 @@ ALLOWED_EXTENSIONS = {"png", "jpeg", "jpg"}
 UPLOAD_FOLDER = "server/image"
 
 @router.post("/ask_image")
-async def ask_image(prompt: str = Form(...), file: UploadFile = File(...)):
+async def ask_image(uid: str = Form(...),prompt: str = Form(...), file: UploadFile = File(...)):
     if not file or not file.filename:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
@@ -19,10 +19,10 @@ async def ask_image(prompt: str = Form(...), file: UploadFile = File(...)):
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Unsupported file extension")
 
-    unique_filename = f"{uuid.uuid4()}.{extension}"
+    unique_filename = f"{uid}.{uuid.uuid4()}.{extension}"
     image_path = os.path.join(UPLOAD_FOLDER, unique_filename)
 
-    # Save file
+
     with open(image_path, "wb") as f:
         content = await file.read()
         f.write(content)

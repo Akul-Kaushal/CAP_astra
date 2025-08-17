@@ -9,7 +9,7 @@ from ..pdf_reader import extract_text_from_pdf
 
 router = APIRouter()
 
-@router.post("/upload")
+@router.post("/upload/{uid}")
 async def upload_file(file: UploadFile = File(...)):
     if not file or not file.filename:
         return {"error": "No file uploaded."}

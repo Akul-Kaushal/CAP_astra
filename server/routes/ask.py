@@ -9,7 +9,7 @@ router = APIRouter()
 class PromptRequest(BaseModel):
     prompt: str
 
-@router.post("/ask")
+@router.post("/ask/{uid}")
 async def ask(request: PromptRequest):
     response = query_gemini(request.prompt)
     return {"response": response}
