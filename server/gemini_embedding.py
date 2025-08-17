@@ -1,35 +1,24 @@
 import os
 import requests
+from google import genai
+import asyncio
+from typing import Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-EMBEDDING_URL = "https://generativelanguage.googleapis.com/v1beta/models/embedding-001:embedContent"
+api_key = os.getenv("GEMINI_API_KEY")
+
+client = genai.Client(api_key= api_key)
 
 def get_gemini_embedding(text: str) -> list[float]:
-    headers = {
-        "Content-Type": "application/json"
-    }
-    params = {
-        "key": API_KEY
-    }
-
-    payload = {
-        "content": {
-            "parts": [
-                {"text": text[:3500]}  
-            ]
-        }
-    }
-
-    response = requests.post(EMBEDDING_URL, headers=headers, params=params, json=payload)
-
-    if not response.ok:
-        print("Gemini Embedding Error:")
-        print(response.text)
-        response.raise_for_status()
-
-    print(response.json())
-
-    return response.json()["embedding"]["values"]
+    """Generate embeddings for a given text using Gemini."""
+    try:
+        response = client.models.embed_content(
+            model="models/embedding-001",
+            contents=text[:3500]
+        )
+        return response.embedding.values
+    except Exception as e:
+        print(f"Gemini Embedding Error: {e}")
+        return []
