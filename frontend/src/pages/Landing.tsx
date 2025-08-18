@@ -2,9 +2,26 @@ import { useNavigate } from "react-router-dom";
 import { Bot, Sparkles, ArrowRight, MessageCircle, Zap, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {supabase} from "@/lib/supabase";
+import { useEffect, useState } from "react";
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
+
+  const handleStart = () => {
+    if (user) {
+      navigate("/chat");
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">

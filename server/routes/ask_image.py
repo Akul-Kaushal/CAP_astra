@@ -3,7 +3,6 @@ import os
 import uuid
 import imghdr
 import json
-
 from ..gemini_api import ask_gemini_about_image
 
 router = APIRouter()
@@ -11,8 +10,8 @@ router = APIRouter()
 ALLOWED_EXTENSIONS = {"png", "jpeg", "jpg"}
 UPLOAD_FOLDER = "server/image"
 
-@router.post("/ask_image")
-async def ask_image(uid: str = Form(...), prompt: str = Form(...), file: UploadFile = File(...)):
+@router.post("/ask_image/{uid}")
+async def ask_image(uid: str, prompt: str = Form(...), file: UploadFile = File(...)):
     if not file or not file.filename:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
@@ -33,23 +32,28 @@ async def ask_image(uid: str = Form(...), prompt: str = Form(...), file: UploadF
         os.remove(image_path)
         raise HTTPException(status_code=400, detail="Uploaded file is not a valid image")
 
+    response = None
     try:
-        # Call Gemini API
         response = ask_gemini_about_image(image_path, prompt)
-
-        # Clean and parse JSON
         cleaned = response.strip()
+
+        parsed = {}
         if cleaned.startswith("```json"):
             cleaned = cleaned.replace("```json", "").replace("```", "").strip()
+            parsed = json.loads(cleaned)
+        else:
+            parsed = {"reply": cleaned}
 
-        parsed = json.loads(cleaned)
+
+        reply_text = parsed.get("reply") or parsed.get("task_recommendation") or "No reply generated."
+        parsed["reply"] = reply_text
         return parsed
 
+
     except Exception as e:
-        return {"raw_response": response, "error": str(e)}
+        return {"reply": response, "error": str(e)}
 
     finally:
-      
         try:
             os.remove(image_path)
         except Exception as e:

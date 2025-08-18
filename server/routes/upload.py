@@ -10,7 +10,7 @@ from ..pdf_reader import extract_text_from_pdf
 router = APIRouter()
 
 @router.post("/upload/{uid}")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(uid: str, file: UploadFile = File(...)):
     if not file or not file.filename:
         return {"error": "No file uploaded."}
 
@@ -22,7 +22,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     # Safe storage directory
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    data_dir = os.path.join(base_dir, "data")
+    data_dir = os.path.join(base_dir, "data",f"{uid}")
     os.makedirs(data_dir, exist_ok=True)
 
     # Unique file name
